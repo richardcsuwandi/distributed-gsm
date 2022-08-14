@@ -7,7 +7,6 @@ addpath('./functions')
 javaaddpath('C:\Program Files\Mosek\9.3\tools\platform\win64x86\bin\mosek.jar')
 addpath('C:\Program Files\Mosek\9.3\toolbox\R2015a')
 
-
 % Read in data
 file_name = 'electricitydata';
 % file_name = 'passengerdata';
