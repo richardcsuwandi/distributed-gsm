@@ -1,1 +1,1 @@
-# Distributed learning for Grid Spectral Mixture (GSM) kernel
+# Distributed Learning for Grid Spectral Mixture (GSM) kernel
