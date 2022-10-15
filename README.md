@@ -18,7 +18,7 @@ This repository contains the code and data used in the paper ["Gaussian Process 
 ```
 
 ## Example
-To see an example, please run the `dsca.m` file for the Distributed SCA (DSCA) algorithm or the `d2sca.m` file for the Doubly Distributed SCA (D$^2$SCA) algorithm.
+To see an example, please run the `dsca.m` file for the Distributed SCA (DSCA) algorithm or the `d2sca.m` file for the Doubly Distributed SCA (D2SCA) algorithm.
 To change the data set, simply uncomment one of the listed data sets and comment the others, e.g., for the `Electricity` data set,
 ```
 % Read in data & some general setup
