@@ -17,5 +17,25 @@ This repository contains the code and data used in the paper ["Gaussian Process 
 }
 ```
 
+## Example
+To see an example, please run the `dsca.m` file for the Distributed SCA (DSCA) algorithm or the `d2sca.m` file for the Doubly Distributed SCA (D$^2$SCA) algorithm.
+The data set can be selected by uncommenting one of the listed data sets, e.g. for `Electricity` data set:
+```
+% Read in data & some general setup
+file_name = 'electricitydata';
+% file_name = 'passengerdata';
+% file_name = 'hoteldata';
+% file_name = 'employmentdata';
+% file_name = 'unemployment';
+% file_name = 'clay';
+% file_name = 'CO2';
+% file_name = 'ECG_signal';  
+
+disp(['Simulation on ',file_name]);
+[xtrain, ytrain, xtest, ytest] = load_data(file_name);
+nTrain = length(xtrain);
+nTest = 20;
+```
+
 ## Dependencies
 The current version of the code uses MATLAB R2021a (https://www.mathworks.com/products/matlab.html) and MOSEK version 9.3 (https://docs.mosek.com/9.3/install/installation.html). Please refer to the corresponding websites for the installation instructions.
