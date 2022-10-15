@@ -116,12 +116,12 @@ time_record = toc;
 [pMean, pVar] = prediction(xtrain, xtest, ytrain, nTest, ...
     theta, nv, freq, var, K);
 
-figName = ['./fig/',file_name,'_Q',int2str(Q),'_S',int2str(S), '.fig'];
+figName = ['./fig/dsca/',file_name,'_Q',int2str(Q),'_S',int2str(S), '.fig'];
 plot_save(xtrain, ytrain, xtest, ytest, nTest, pMean, pVar, figName, file_name);
 
 % Record MSE
 MSE = mean((pMean-ytest(1:nTest)).^2);
 
 % Save info
-save(['./fig/',file_name,'_Q',int2str(Q),'_S',int2str(S), '.mat'], ...
+save(['./fig/dsca/',file_name,'_Q',int2str(Q),'_S',int2str(S), '.mat'], ...
     'MSE', 'time_record');
