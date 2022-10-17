@@ -76,7 +76,7 @@ Theta = mat2cell(theta, diff([0:b:Q-1,Q]));
 C_k = C_matrix(theta, K, nv, eye(nTrain));
 tic;
 for k = 1:max_iter
-    % Main loop for parallel update
+    % Main loop for parallel update  % can also use 'parfor' for acceleration  
     for i = 1:S
         disp(['Updating block ', int2str(i)]);
         
