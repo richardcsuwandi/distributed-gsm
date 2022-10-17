@@ -72,7 +72,7 @@ for ii = 1:length(S_vals)
     C_k = C_matrix(theta, K, nv, eye(nTrain));
     tic;
     for k = 1:max_iter
-        % Main loop for parallel computation
+        % Main loop for parallel computation  % can also use 'parfor' for acceleration
         for i = 1:S
             disp(['Updating block ', int2str(i)]);
 
