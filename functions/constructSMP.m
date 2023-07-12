@@ -17,9 +17,6 @@ for i=1:A
         tmp1 = exp(-2*pi^2*(diffMat.^2).*(var^2));  % Formula for SM kernel;
         tmp2 = cos(2*pi*mean*diffMat);
         
-        % 2022/08/18: found a bug here, the multiplication did not include
-        %             the subKernels{i} from the other dimensions
-%         subKernels{i} = tmp1 .* tmp2;
         subKernels{i} = subKernels{i} .* tmp1 .* tmp2; 
     end
 end

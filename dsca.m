@@ -4,8 +4,8 @@ addpath('./data')
 addpath('./functions')
 
 % MOSEK setup
-javaaddpath('C:\Program Files\Mosek\9.3\tools\platform\win64x86\bin\mosek.jar')
-addpath('C:\Program Files\Mosek\9.3\toolbox\R2015a')
+javaaddpath('/Users/richardcsuwandi/Downloads/mosek/10.0/tools/platform/osx64x86/bin/mosek.jar')
+addpath('/Users/richardcsuwandi/Downloads/mosek/10.0/toolbox/r2017a')
 
 % Read in data
 file_name = 'electricitydata';

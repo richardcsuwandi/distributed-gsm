@@ -10,11 +10,11 @@ addpath('/Users/richardcsuwandi/Downloads/mosek/10.0/toolbox/r2017a')
 % Read in data & some general setup
 % file_name = 'electricitydata';
 % file_name = 'passengerdata';
-file_name = 'hoteldata';
+% file_name = 'hoteldata';
 % file_name = 'employmentdata';
 % file_name = 'unemployment';
 % file_name = 'clay';
-% file_name = 'CO2';
+file_name = 'CO2';
 % file_name = 'ECG_signal';  
 
 disp(['Simulation on ',file_name]);
@@ -33,7 +33,7 @@ end
 
 nv = evar(ytrain); % Returns an estimated variance of the Gaussian noise
 
-% Sampling method: 0 represents fixed grids, 1 represents random
+% Sampling method: 0 represents fixed grids, 1 represents random.
 Q = 500;
 options_gen = struct('freq_lb', 0, 'freq_ub', 0.5, ...
                      'var_lb', 0, 'var_ub', 0.15, ... 
@@ -59,16 +59,17 @@ Ytrain = mat2cell(ytrain, diff([0:floor(nTrain/N):nTrain-1,nTrain]));
 % ADMM setup
 rho_init = 1e-10;
 lambda_init = zeros(Q, N); % Dual variable
+Delta = 0.5; % Quantization resolution
 options = struct('N', N, 'rho', rho_init, 'lambda_init', lambda_init, ...
                  'max_iter', 100, 'local_max_iter', 100, ...
                  'zeta_init', zeta_init, 'nv', nv, ...
                  'local_tol', 1e-3, 'tol_abs', 1e-3, 'tol_rel', 1e-3, ...
-                 'mu', 10, 'nu', 2, 'apply_rb', 1);
+                 'mu', 10, 'nu', 2, 'apply_rb', 1, 'Delta', Delta);
 
 disp('Algorithm Setup:')
 disp(options)
 
-% Hyperparameter optimization using the ADMM + DSCA framework
+% Hyperparameter optimization using the ADMM with quantization + DSCA framework
 tic;
 
 N = options.N;
@@ -168,12 +169,17 @@ for t = 1:options.max_iter
                 break
             end
             
+            % Quantize the local hyperparameters
+            zeta_t(:, j) = quantize(zeta_t(:, j), options.Delta);
         end
     end
 
     % Obtain the global hyperparameters
     theta_t_old = theta_t; % Store the old value of theta_t
     theta_t = (sum(zeta_t, 2) + 1 / rho * sum(lambda_t, 2)) / N;
+
+    % Quantize the global hyperparameters
+    theta_t = quantize(theta_t, options.Delta);
 
     % Obtain the dual variable
     for j = 1:N
@@ -223,7 +229,7 @@ time_record = toc;
                            theta_t, nv, freq, var, K);
 
 % Plot and save the results
-figName = ['./fig/d2sca/',file_name,'_rho',num2str(rho_init), '_maxiter',int2str(options.max_iter), '_N', int2str(options.N), '.fig'];
+figName = ['./fig/qd2sca/',file_name,'_rho',num2str(rho_init), '_maxiter',int2str(options.max_iter), '_N', int2str(options.N), '_Delta', num2str(options.Delta), '.fig'];
 plot_save(xtrain,ytrain,xtest,ytest,nTest,pMean,pVar,figName,file_name);
 
 % Record MSE
@@ -233,5 +239,5 @@ MSE = mean((pMean-ytest(1:nTest)).^2);
 [pMean_loc, pVar_loc, MSE_loc, pMean_fused, pVar_fused, MSE_fused] = plot_loc_predict(Xtrain, xtest, Ytrain, ytest, nTest, freq, var, N, theta_t, nv, file_name);
 
 % Save info
-save(['./fig/d2sca/',file_name,'_rho',num2str(rho_init), '_maxiter',int2str(options.max_iter), '_N', int2str(options.N), '.mat'], ...
+save(['./fig/qd2sca/',file_name,'_rho',num2str(rho_init), '_maxiter',int2str(options.max_iter), '_N', int2str(options.N), '_Delta', num2str(options.Delta), '.mat'], ...
     'MSE', 'MSE_loc', 'MSE_fused', 'time_record', 'history');
