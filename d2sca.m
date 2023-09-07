@@ -15,7 +15,7 @@ file_name = 'hoteldata';
 % file_name = 'unemployment';
 % file_name = 'clay';
 % file_name = 'CO2';
-% file_name = 'ECG_signal';  
+% file_name = 'ECG_signal';
 
 disp(['Simulation on ',file_name]);
 [xtrain, ytrain, xtest, ytest] = load_data(file_name);
@@ -41,7 +41,7 @@ options_gen = struct('freq_lb', 0, 'freq_ub', 0.5, ...
                      'nFreqCand', Q, 'nVarCand', 1, ...
                      'fix_var', 0.001,...
                      'sampling', 0 );
-             
+
 % Generate GSM kernels
 [freq, var, Q] = generateGSM(options_gen); % the length of freq or var is Q we need
 K = kernelComponent(freq, var, xtrain, xtrain); % Generate sub-kernels
@@ -101,16 +101,16 @@ for t = 1:options.max_iter
     % Obtain the local hyperparameters
     for j = 1:N
         disp(['Optimizing local hyperparameters for agent ', num2str(j)])
-        
+
         % Local datasets
-        x_train_j = Xtrain{j};  y_train_j = Ytrain{j}; 
+        x_train_j = Xtrain{j};  y_train_j = Ytrain{j};
 
         % Length of local data
         nTrain_j = length(x_train_j); 
-        
+
         % Extract the pre-computed K_j and L_j
         K_j = K_loc{j}; L_j = L_loc{j};
-        
+
         % Initialization of DSCA for the local agent
         obj_val_j = zeros(options.local_max_iter, 1);
         S = 4; % Number of parallel computing units
@@ -155,7 +155,7 @@ for t = 1:options.max_iter
             C_k_j = C_matrix(zeta_t(:, j), K_j, options.nv, eye(nTrain_j));
             obj_val_j(k) = compute_obj_val(y_train_j, C_k_j);
             disp(['Iteration: ', num2str(k), ' | Obj. Value: ', num2str(obj_val_j(k))])
-            
+
             % Stopping criterion for DSCA
             if k > 1
                 if abs(obj_val_j(k) - obj_val_j(k - 1)) / max(1., abs(obj_val_j(k))) < options.local_tol
@@ -167,7 +167,7 @@ for t = 1:options.max_iter
             if and(norm(zeta_t(:, j) - zeta_t_j_old) / max(1., abs(zeta_t(:, j))) < options.local_tol, k >= 1)
                 break
             end
-            
+
         end
     end
 
@@ -196,7 +196,7 @@ for t = 1:options.max_iter
 
     disp(['tol_pri: ', num2str(history.tol_pri(t))])
     disp(['tol_dual: ', num2str(history.tol_dual(t))])
-    
+
     % Stopping criteria for ADMM
     if t > 1
         if and( history.norm_pri_res(t) < history.tol_pri(t),...
