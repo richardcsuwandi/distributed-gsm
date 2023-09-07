@@ -8,13 +8,13 @@ javaaddpath('/Users/richardcsuwandi/Downloads/mosek/10.0/tools/platform/osx64x86
 addpath('/Users/richardcsuwandi/Downloads/mosek/10.0/toolbox/r2017a')
 
 % Read in data & some general setup
-% file_name = 'electricitydata';
+file_name = 'electricitydata';
 % file_name = 'passengerdata';
 % file_name = 'hoteldata';
 % file_name = 'employmentdata';
 % file_name = 'unemployment';
 % file_name = 'clay';
-file_name = 'CO2';
+% file_name = 'CO2';
 % file_name = 'ECG_signal';  
 
 disp(['Simulation on ',file_name]);
@@ -59,7 +59,7 @@ Ytrain = mat2cell(ytrain, diff([0:floor(nTrain/N):nTrain-1,nTrain]));
 % ADMM setup
 rho_init = 1e-10;
 lambda_init = zeros(Q, N); % Dual variable
-Delta = 0.5; % Quantization resolution
+Delta = 1e-2; % Quantization resolution
 options = struct('N', N, 'rho', rho_init, 'lambda_init', lambda_init, ...
                  'max_iter', 100, 'local_max_iter', 100, ...
                  'zeta_init', zeta_init, 'nv', nv, ...
@@ -100,6 +100,7 @@ for t = 1:options.max_iter
     disp(['Iteration ', num2str(t), ' of ADMM'])
 
     % Obtain the local hyperparameters
+    local_savings = zeros(N, 1);
     for j = 1:N
         disp(['Optimizing local hyperparameters for agent ', num2str(j)])
         
@@ -168,11 +169,15 @@ for t = 1:options.max_iter
             if and(norm(zeta_t(:, j) - zeta_t_j_old) / max(1., abs(zeta_t(:, j))) < options.local_tol, k >= 1)
                 break
             end
-            
-            % Quantize the local hyperparameters
-            zeta_t(:, j) = quantize(zeta_t(:, j), options.Delta);
         end
+        % Compute bits savings
+        [~, ~, savings_j] = compute_bits(zeta_t(:, j), Delta);
+        local_savings(j) = savings_j;
+
+        % Quantize the local hyperparameters
+        zeta_t(:, j) = quantize(zeta_t(:, j), options.Delta);
     end
+    history.average_savings(t) = mean(local_savings);
 
     % Obtain the global hyperparameters
     theta_t_old = theta_t; % Store the old value of theta_t

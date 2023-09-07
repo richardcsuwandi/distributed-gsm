@@ -53,7 +53,7 @@ Ytrain = mat2cell(ytrain, diff([0:floor(nTrain/N):nTrain-1,nTrain]));
 % ADMM setup
 rho_init = 1e-10;
 lambda_init = zeros(A, N); % Dual variable
-Delta = 0.5; % Quantization resolution
+Delta = 1; % Quantization resolution
 options = struct('N', N, 'rho', rho_init, 'lambda_init', lambda_init, ...
                  'max_iter', 100, 'local_max_iter', 100, ...
                  'zeta_init', zeta_init, 'nv', nv, ...
@@ -95,6 +95,7 @@ for t = 1:options.max_iter
     disp(['Iteration ', num2str(t), ' of ADMM'])
 
     % Obtain the local hyperparameters
+    local_savings = zeros(N, 1);
     for j = 1:N
         disp(['Optimizing local hyperparameters for agent ', num2str(j)])
         
@@ -158,11 +159,15 @@ for t = 1:options.max_iter
                     break
                 end
             end
-
-            % Quantize the local hyperparameters
-            zeta_t(:, j) = quantize(zeta_t(:, j), options.Delta);
         end
+        % Compute bits savings
+        [~, ~, savings_j] = compute_bits(zeta_t(:, j), Delta);
+        local_savings(j) = savings_j;
+
+        % Quantize the local hyperparameters
+        zeta_t(:, j) = quantize(zeta_t(:, j), options.Delta);
     end
+    history.average_savings(t) = mean(local_savings);
 
     % Obtain the global hyperparameters
     theta_t_old = theta_t; % Store the old value of theta_t
