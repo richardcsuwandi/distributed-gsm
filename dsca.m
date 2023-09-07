@@ -41,7 +41,7 @@ options_gen = struct('freq_lb', 0, 'freq_ub', 0.5, ...
                      'nFreqCand', Q, 'nVarCand', 1, ...
                      'fix_var', 0.001,...
                      'sampling', 0 );
-             
+
 % Generate the GSM kernels
 [freq, var, Q] = generateGSM(options_gen);
 
@@ -79,12 +79,12 @@ for k = 1:max_iter
     % Main loop for parallel update  % can also use 'parfor' for acceleration  
     for i = 1:S
         disp(['Updating block ', int2str(i)]);
-        
+
         m = (i - 1)*Q/S;
         L_i = L((m + 1):(m + Q/S));
         K_i = K((m + 1):(m + Q/S));
         theta_i = Theta{i};
-        
+
         % Compute g (excluding the i-th block)
         C_i = sparse(nTrain, nTrain);
         for j = 1:numel(theta_i)
@@ -97,12 +97,12 @@ for k = 1:max_iter
         Theta{i} = theta_hat;
     end
     theta = vertcat(Theta{:});
-    
+
     % Compute the objective value
     C_k = C_matrix(theta, K, nv, eye(nTrain));
     obj_val(k) = compute_obj_val(ytrain, C_k);
     disp(['Iteration: ', num2str(k), ' | Obj. Value: ', num2str(obj_val(k))])
-  
+
     % Stopping criterion
     if k > 1
         if abs(obj_val(k) - obj_val(k - 1)) / max(1., abs(obj_val(k))) < tol

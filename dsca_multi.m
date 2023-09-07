@@ -12,7 +12,7 @@ rng(seed);
 
 % Read in data & some general setup
 file_name = 'ale80';
-% file_name = 'airfoil600';
+% file_name = 'airfoil600';var
 % file_name = 'cccp1000';
 % file_name = 'toxicity436'
 % file_name = 'concrete824'
@@ -36,7 +36,7 @@ options = struct('freq_lb', 0, ...
                  'nVarCand', 1, ...
                  'fix_var', 0.001, ...
                  'sampling', 0); % 0 for uniform, 1 for random
-             
+
 % Sample the frequencies and variances
 [freq, var] = generateMultiGSM(options);
 
@@ -53,14 +53,14 @@ MSE_vals = zeros(length(S_vals), 1);
 time_vals = zeros(length(S_vals), 1);
 n_iters = zeros(length(S_vals), 1);
 for ii = 1:length(S_vals)
-    % Initialize alpha 
+    % Initialize alpha
     % First argument 0: fix, 1: compute, 2: random
     theta = ini_Alpha(0, 0, A, ytrain, K);
 
     S = S_vals(ii); % Number of local machines to use
     b = A/S; % Block size
 
-    % Partition the optimization variable into s blocks 
+    % Partition the optimization variable into s blocks
     Theta = mat2cell(theta, diff([0:b:A-1,A]));
 
     % Algorithm setup
