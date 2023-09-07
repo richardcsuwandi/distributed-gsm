@@ -8,12 +8,13 @@ javaaddpath('/Users/richardcsuwandi/Downloads/mosek/10.0/tools/platform/osx64x86
 addpath('/Users/richardcsuwandi/Downloads/mosek/10.0/toolbox/r2017a')
 
 % Read in data & some general setup
-file_name = 'ale80';
+% file_name = 'ale80';
 % file_name = 'airfoil600';
 % file_name = 'cccp1000';
 % file_name = 'toxicity436'
 % file_name = 'concrete824'
 % file_name = 'wine1279';
+file_name = 'cccp9500';
 
 disp(['Simulation on ',file_name]);
 [xtrain, ytrain, xtest, ytest] = load_data(file_name);
@@ -44,7 +45,7 @@ K = constructSMP(freq, var, xtrain, xtrain);
 % First argument 0: fix, 1: compute, 2: random
 zeta_init = ini_Alpha(0, 0, A, ytrain, K);
 
-N = 2; % Number of local machines to use
+N = 10; % Number of local machines to use
 
 % Partition the data
 Xtrain = mat2cell(xtrain, diff([0:floor(nTrain/N):nTrain-1,nTrain]));
@@ -54,7 +55,7 @@ Ytrain = mat2cell(ytrain, diff([0:floor(nTrain/N):nTrain-1,nTrain]));
 rho_init = 1e-10;
 lambda_init = zeros(A, N); % Dual variable
 options = struct('N', N, 'rho', rho_init, 'lambda_init', lambda_init, ...
-                 'max_iter', 100, 'local_max_iter', 100, ...
+                 'max_iter', 10, 'local_max_iter', 10, ...
                  'zeta_init', zeta_init, 'nv', nv, ...
                  'local_tol', 1e-3, 'tol_abs', 1e-3, 'tol_rel', 1e-3, ...
                  'mu', 10, 'nu', 2, 'apply_rb', 1);
